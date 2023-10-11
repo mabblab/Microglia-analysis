@@ -1,0 +1,623 @@
+---
+title: "Microglial Analysis DP"
+author: "Dhanya Pyaram"
+date: "2023-06-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ClusterBootstrap)
+library(readxl)
+```
+
+#Part 1 - SomaSize in Hippocampus
+
+```{r}
+area <- read_excel("~/Desktop/R Stats 2022/Data/Microglia_Analysis_Bootstrap_DP.xlsx", sheet = 1)
+area$Treatment <- as.factor(area$Treatment)
+area$Treatment <- relevel(area$Treatment, ref = "WT")
+area$Sex <- as.factor(area$Sex)
+area$Sex <- relevel(area$Sex, ref = "M")
+area$Sex_Treatment <- as.factor(area$Sex_Treatment)
+area$Sex_Treatment <- relevel(area$Sex_Treatment, ref = "M-WT")
+area$Time <- c(rep(1, 732))
+```
+
+
+```{r}
+set.seed(1)
+model_area_hipp <- clusbootglm(Area ~ Sex_Treatment, data = area, clusterid = Animal_ID, family = gaussian, B = 5000, confint.level = 0.95, n.cores = 1)
+```
+
+
+
+```{r}
+summary(model_area_hipp)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_area_hipp_m <- ptest(area, Area, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-WT", "M-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_area_hipp_f <- ptest(area, Area, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("F-WT", "F-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+
+```{r}
+options(digits = 10)
+p_test_area_hipp_wt <- ptest(area, Area, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-WT", "F-WT"), pn = 1000, progress.bar = TRUE)
+```
+
+
+```{r}
+options(digits = 10)
+p_test_area_hipp_ko <- ptest(area, Area, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-KO", "F-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+area_hipp_m_wt <- area %>%
+  filter(Sex_Treatment == "M-WT")
+area_hipp_m_ko <- area %>%
+  filter(Sex_Treatment == "M-KO")
+area_hipp_f_wt <- area %>%
+  filter(Sex_Treatment == "F-WT")
+area_hipp_f_ko <- area %>%
+  filter(Sex_Treatment == "F-KO")
+```
+
+
+```{r}
+t.test(area_hipp_m_wt$Area, area_hipp_m_ko$Area)
+t.test(area_hipp_f_wt$Area, area_hipp_f_ko$Area)
+t.test(area_hipp_m_wt$Area, area_hipp_f_wt$Area)
+t.test(area_hipp_m_ko$Area, area_hipp_f_ko$Area)
+```
+
+
+```{r}
+plot(p_test_area_hipp_m, pcol = "red")
+```
+
+
+```{r}
+plot(p_test_area_hipp_f, pcol = "red")
+```
+
+```{r}
+plot(p_test_area_hipp_wt, pcol = "red")
+```
+
+
+
+```{r}
+plot(p_test_area_hipp_ko, pcol = "red")
+```
+
+
+
+
+#Soma Size in Cortex 
+
+
+```{r}
+area <- read_excel("~/Desktop/R Stats 2022/Data/Microglia_Analysis_Bootstrap_DP.xlsx", sheet = 2)
+area$Treatment <- as.factor(area$Treatment)
+area$Treatment <- relevel(area$Treatment, ref = "WT")
+area$Sex <- as.factor(area$Sex)
+area$Sex <- relevel(area$Sex, ref = "M")
+area$Sex_Treatment <- as.factor(area$Sex_Treatment)
+area$Sex_Treatment <- relevel(area$Sex_Treatment, ref = "M-WT")
+area$Time <- c(rep(1, 732))
+```
+
+
+
+```{r}
+set.seed(1)
+model_area_cortex <- clusbootglm(Area ~ Sex_Treatment, data = area, clusterid = Animal_ID, family = gaussian, B = 5000, confint.level = 0.95, n.cores = 1)
+```
+
+
+
+
+
+```{r}
+summary(model_area_cortex)
+```
+
+
+```{r}
+options(digits = 10)
+p_test_area_cortex_m <- ptest(area, Area, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-WT", "M-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_area_cortex_f <- ptest(area, Area, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("F-WT", "F-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+```{r}
+options(digits = 10)
+p_test_area_cortex_wt <- ptest(area, Area, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-WT", "F-WT"), pn = 1000, progress.bar = TRUE)
+```
+
+
+```{r}
+options(digits = 10)
+p_test_area_cortex_ko <- ptest(area, Area, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-KO", "F-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+area_cortex_m_wt <- area %>%
+  filter(Sex_Treatment == "M-WT")
+area_cortex_m_ko <- area %>%
+  filter(Sex_Treatment == "M-KO")
+area_cortex_f_wt <- area %>%
+  filter(Sex_Treatment == "F-WT")
+area_cortex_f_ko <- area %>%
+  filter(Sex_Treatment == "F-KO")
+```
+
+
+
+```{r}
+t.test(area_cortex_m_wt$Area, area_cortex_m_ko$Area)
+t.test(area_cortex_f_wt$Area, area_cortex_f_ko$Area)
+t.test(area_cortex_m_wt$Area, area_cortex_f_wt$Area)
+t.test(area_cortex_m_ko$Area, area_cortex_f_ko$Area)
+```
+
+
+
+```{r}
+plot(p_test_area_cortex_m, pcol = "red")
+```
+
+
+
+```{r}
+plot(p_test_area_cortex_f, pcol = "red")
+```
+
+
+```{r}
+plot(p_test_area_cortex_wt, pcol = "red")
+```
+
+
+
+```{r}
+plot(p_test_area_cortex_ko, pcol = "red")
+```
+
+
+
+#Sholl Intersection in terms of COG scores in Hippocampus
+
+```{r}
+sholl_intersections_hipp <- read_excel("~/Desktop/R Stats 2022/Data/Microglia_Analysis_Bootstrap_DP.xlsx", sheet = 3)
+sholl_intersections_hipp$Treatment <- as.factor(sholl_intersections_hipp$Treatment)
+sholl_intersections_hipp$Treatment <- relevel(sholl_intersections_hipp$Treatment, ref = "WT")
+sholl_intersections_hipp$Sex <- as.factor(sholl_intersections_hipp$Sex)
+sholl_intersections_hipp$Sex <- relevel(sholl_intersections_hipp$Sex, ref = "M")
+sholl_intersections_hipp$Sex_Treatment <- as.factor(sholl_intersections_hipp$Sex_Treatment)
+sholl_intersections_hipp$Sex_Treatment <- relevel(sholl_intersections_hipp$Sex_Treatment, ref = "M-WT")
+sholl_intersections_hipp$COG_Sholl <- as.numeric(sholl_intersections_hipp$COG_Sholl)
+sholl_intersections_hipp <- na.omit(sholl_intersections_hipp)
+sholl_intersections_hipp$Time <- c(rep(1,120))
+```
+
+
+
+
+```{r}
+model_sholl_hipp <- clusbootglm(COG_Sholl ~ Sex_Treatment, data = sholl_intersections_hipp, clusterid = Animal_ID, family = gaussian, B = 5000, confint.level = 0.95, n.cores = 1)
+```
+
+
+```{r}
+summary(model_sholl_hipp)
+```
+
+
+```{r}
+Sholl_hipp_m_wt <- sholl_intersections %>%
+  filter(Sex_Treatment == "M-WT")
+Sholl_hipp_m_ko <- sholl_intersections %>%
+  filter(Sex_Treatment == "M-KO")
+Sholl_hipp_f_wt <- sholl_intersections %>%
+  filter(Sex_Treatment == "F-WT")
+Sholl_hipp_f_ko <- sholl_intersections %>%
+  filter(Sex_Treatment == "F-KO")
+```
+
+
+```{r}
+t.test(Sholl_hipp_m_wt$COG_Sholl, Sholl_hipp_m_ko$COG_Sholl)
+t.test(Sholl_hipp_f_wt$COG_Sholl, Sholl_hipp_f_ko$COG_Sholl)
+t.test(Sholl_hipp_m_wt$COG_Sholl, Sholl_hipp_f_wt$COG_Sholl)
+t.test(Sholl_hipp_m_ko$COG_Sholl, Sholl_hipp_f_ko$COG_Sholl)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_hipp_m <- ptest(sholl_intersections, COG_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-WT", "M-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_hipp_f <- ptest(sholl_intersections, COG_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("F-WT", "F-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_hipp_wt <- ptest(sholl_intersections, COG_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-WT", "F-WT"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_hipp_ko <- ptest(sholl_intersections, COG_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-KO", "F-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+```{r}
+plot(p_test_sholl_hipp_m, pcol = "red")
+```
+
+
+```{r}
+plot(p_test_sholl_hipp_f, pcol = "red")
+```
+
+
+
+```{r}
+plot(p_test_sholl_hipp_wt, pcol = "red")
+```
+
+
+
+
+```{r}
+plot(p_test_sholl_hipp_ko, pcol = "red")
+```
+
+
+
+
+
+#Sholl Intersection in terms of COG scores in Cortex
+
+```{r}
+sholl_intersections_ctx <- read_excel("~/Desktop/R Stats 2022/Data/Microglia_Analysis_Bootstrap_DP.xlsx", sheet = 5)
+sholl_intersections_ctx$Treatment <- as.factor(sholl_intersections_ctx$Treatment)
+sholl_intersections_ctx$Treatment <- relevel(sholl_intersections$Treatment, ref = "WT")
+sholl_intersections_ctx$Sex <- as.factor(sholl_intersections$Sex)
+sholl_intersections_ctx$Sex <- relevel(sholl_intersections$Sex, ref = "M")
+sholl_intersections_ctx$Sex_Treatment <- as.factor(sholl_intersections$Sex_Treatment)
+sholl_intersections_ctx$Sex_Treatment <- relevel(sholl_intersections$Sex_Treatment, ref = "M-WT")
+sholl_intersections_ctx$COG_Sholl <- as.numeric(sholl_intersections$COG_Sholl)
+sholl_intersections_ctx <- na.omit(sholl_intersections)
+sholl_intersections_ctx$Time <- c(rep(1,120))
+```
+
+
+
+```{r}
+model_sholl_ctx <- clusbootglm(COG_Sholl ~ Sex_Treatment, data = sholl_intersections, clusterid = Animal_ID, family = gaussian, B = 5000, confint.level = 0.95, n.cores = 1)
+```
+
+```{r}
+summary(model_sholl_ctx)
+```
+
+
+```{r}
+Sholl_ctx_m_wt <- sholl_intersections %>%
+  filter(Sex_Treatment == "M-WT")
+Sholl_ctx_m_ko <- sholl_intersections %>%
+  filter(Sex_Treatment == "M-KO")
+Sholl_ctx_f_wt <- sholl_intersections %>%
+  filter(Sex_Treatment == "F-WT")
+Sholl_ctx_f_ko <- sholl_intersections %>%
+  filter(Sex_Treatment == "F-KO")
+```
+
+
+```{r}
+t.test(Sholl_ctx_m_wt$COG_Sholl, Sholl_ctx_m_ko$COG_Sholl)
+t.test(Sholl_ctx_f_wt$COG_Sholl, Sholl_ctx_f_ko$COG_Sholl)
+t.test(Sholl_ctx_m_wt$COG_Sholl, Sholl_ctx_f_wt$COG_Sholl)
+t.test(Sholl_ctx_m_ko$COG_Sholl, Sholl_ctx_f_ko$COG_Sholl)
+```
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_ctx_m <- ptest(sholl_intersections, COG_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-WT", "M-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_ctx_f <- ptest(sholl_intersections, COG_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("F-WT", "F-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_ctx_wt <- ptest(sholl_intersections, COG_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-WT", "F-WT"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_ctx_ko <- ptest(sholl_intersections, COG_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-KO", "F-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+plot(p_test_sholl_ctx_m, pcol = "red")
+```
+
+
+
+```{r}
+plot(p_test_sholl_ctx_f, pcol = "red")
+```
+
+
+```{r}
+plot(p_test_sholl_ctx_wt, pcol = "red")
+```
+
+
+
+```{r}
+plot(p_test_sholl_ctx_ko, pcol = "red")
+```
+
+
+
+#Sholl Intersection in terms of AUC scores in Hippocampus
+
+
+
+```{r}
+sholl_auc_hipp <- read_excel("~/Desktop/R Stats 2022/Data/Microglia_Analysis_Bootstrap_DP.xlsx", sheet = 4)
+sholl_auc_hipp$Treatment <- as.factor(sholl_auc_hipp$Treatment)
+sholl_auc_hipp$Treatment <- relevel(sholl_auc_hipp$Treatment, ref = "WT")
+sholl_auc_hipp$Sex <- as.factor(sholl_auc_hipp$Sex)
+sholl_auc_hipp$Sex <- relevel(sholl_auc_hipp$Sex, ref = "M")
+sholl_auc_hipp$Sex_Treatment <- as.factor(sholl_auc_hipp$Sex_Treatment)
+sholl_auc_hipp$Sex_Treatment <- relevel(sholl_auc_hipp$Sex_Treatment, ref = "M-WT")
+sholl_auc_hipp$AUC_Sholl <- as.numeric(sholl_auc_hipp$AUC_Sholl)
+sholl_auc_hipp$Time <- c(rep(1,120))
+```
+
+
+```{r}
+set.seed(1)
+model_auc_sholl_hipp<- clusbootglm(AUC_Sholl ~ Sex_Treatment, data = sholl_auc_hipp, clusterid = Animal_ID, family = gaussian, B = 5000, confint.level = 0.95, n.cores = 1)
+```
+
+
+
+```{r}
+summary(model_auc_sholl_hipp)
+```
+
+
+```{r}
+sholl_auc_hipp_m_wt <- sholl_auc_hipp %>%
+  filter(Sex_Treatment == "M-WT")
+sholl_auc_hipp_m_ko <- sholl_auc_hipp %>%
+  filter(Sex_Treatment == "M-KO")
+sholl_auc_hipp_f_wt <- sholl_auc_hipp %>%
+  filter(Sex_Treatment == "F-WT")
+sholl_auc_hipp_f_ko <- sholl_auc_hipp %>%
+  filter(Sex_Treatment == "F-KO")
+```
+
+
+
+
+```{r}
+t.test(sholl_auc_hipp_m_wt$AUC_Sholl, sholl_auc_hipp_m_ko$AUC_Sholl)
+t.test(sholl_auc_hipp_f_wt$AUC_Sholl, sholl_auc_hipp_f_ko$AUC_Sholl)
+t.test(sholl_auc_hipp_m_wt$AUC_Sholl, sholl_auc_hipp_f_wt$AUC_Sholl)
+t.test(sholl_auc_hipp_m_ko$AUC_Sholl, sholl_auc_hipp_f_ko$AUC_Sholl)
+```
+
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_auc_hipp_m <- ptest(sholl_auc_hipp, AUC_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-WT", "M-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_auc_hipp_f <- ptest(sholl_auc_hipp, AUC_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("F-WT", "F-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_auc_hipp_wt <- ptest(sholl_auc_hipp, AUC_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-WT", "F-WT"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_auc_hipp_ko <- ptest(sholl_auc_hipp, AUC_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-KO", "F-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+
+```{r}
+plot(p_test_sholl_auc_hipp_m, pcol = "red")
+```
+
+
+
+```{r}
+plot(p_test_sholl_auc_hipp_f, pcol = "red")
+```
+
+
+```{r}
+plot(p_test_sholl_auc_hipp_wt, pcol = "red")
+```
+
+
+```{r}
+plot(p_test_sholl_auc_hipp_ko, pcol = "red")
+```
+
+
+
+
+
+
+#Sholl Intersection in terms of AUC scores in Cortex
+
+
+```{r}
+sholl_auc_ctx <- read_excel("~/Desktop/R Stats 2022/Data/Microglia_Analysis_Bootstrap_DP.xlsx", sheet = 6)
+sholl_auc_ctx$Treatment <- as.factor(sholl_auc_ctx$Treatment)
+sholl_auc_ctx$Treatment <- relevel(sholl_auc_ctx$Treatment, ref = "WT")
+sholl_auc_ctx$Sex <- as.factor(sholl_auc_ctx$Sex)
+sholl_auc_ctx$Sex <- relevel(sholl_auc_ctx$Sex, ref = "M")
+sholl_auc_ctx$Sex_Treatment <- as.factor(sholl_auc_ctx$Sex_Treatment)
+sholl_auc_ctx$Sex_Treatment <- relevel(sholl_auc_ctx$Sex_Treatment, ref = "M-WT")
+sholl_auc_ctx$AUC_Sholl <- as.numeric(sholl_auc_ctx$AUC_Sholl)
+sholl_auc_ctx$Time <- c(rep(1,120))
+```
+
+
+```{r}
+set.seed(1)
+model_auc_sholl_ctx<- clusbootglm(AUC_Sholl ~ Sex_Treatment, data = sholl_auc_ctx, clusterid = Animal_ID, family = gaussian, B = 5000, confint.level = 0.95, n.cores = 1)
+```
+
+
+
+```{r}
+summary(model_auc_sholl_ctx)
+```
+
+
+```{r}
+sholl_auc_ctx_m_wt <- sholl_auc_ctx %>%
+  filter(Sex_Treatment == "M-WT")
+sholl_auc_ctx_m_ko <- sholl_auc_ctx %>%
+  filter(Sex_Treatment == "M-KO")
+sholl_auc_ctx_f_wt <- sholl_auc_ctx %>%
+  filter(Sex_Treatment == "F-WT")
+sholl_auc_ctx_f_ko <- sholl_auc_ctx %>%
+  filter(Sex_Treatment == "F-KO")
+```
+
+
+
+
+```{r}
+t.test(sholl_auc_ctx_m_wt$AUC_Sholl, sholl_auc_ctx_m_ko$AUC_Sholl)
+t.test(sholl_auc_ctx_f_wt$AUC_Sholl, sholl_auc_ctx_f_ko$AUC_Sholl)
+t.test(sholl_auc_ctx_m_wt$AUC_Sholl, sholl_auc_ctx_f_wt$AUC_Sholl)
+t.test(sholl_auc_ctx_m_ko$AUC_Sholl, sholl_auc_ctx_f_ko$AUC_Sholl)
+```
+
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_auc_ctx_m <- ptest(sholl_auc_ctx, AUC_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-WT", "M-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_auc_ctx_f <- ptest(sholl_auc_ctx, AUC_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("F-WT", "F-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_auc_ctx_wt <- ptest(sholl_auc_ctx, AUC_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-WT", "F-WT"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+```{r}
+options(digits = 10)
+p_test_sholl_auc_ctx_ko <- ptest(sholl_auc_ctx, AUC_Sholl, within = Time, between = Sex_Treatment, at.within = c(1), at.between = c("M-KO", "F-KO"), pn = 1000, progress.bar = TRUE)
+```
+
+
+
+
+```{r}
+plot(p_test_sholl_auc_ctx_m, pcol = "red")
+```
+
+
+
+```{r}
+plot(p_test_sholl_auc_ctx_f, pcol = "red")
+```
+
+
+```{r}
+plot(p_test_sholl_auc_ctx_wt, pcol = "red")
+```
+
+
+```{r}
+plot(p_test_sholl_auc_ctx_ko, pcol = "red")
+```
+
